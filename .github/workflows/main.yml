@@ -47,7 +47,7 @@ jobs:
             i=0
             while [ -z "$roleDefinitionId" ]
             do
-              if [[ "$i" == '100' ]]
+              if [ "$i" == '100' ]
               then
                 echo "Role Definition not found after $i tries"
                 break
@@ -55,7 +55,8 @@ jobs:
               echo "Getting Role Definition Id"
               roleDefinitionId=$(az role definition list --name '${{ env.CUSTOM_ROLE_NAME }}' --query '[0].name' -o tsv)
               if [ -z "$roleDefinitionId" ]
-              then 
+              then
+                echo "Found Role Definition Id $roleDefinitionId" 
                 break
               fi
               ((i++))
