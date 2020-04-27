@@ -54,6 +54,10 @@ jobs:
               fi
               echo "Getting Role Definition Id"
               roleDefinitionId=$(az role definition list --name '${{ env.CUSTOM_ROLE_NAME }}' --query '[0].name' -o tsv)
+              if [ -z "$roleDefinitionId" ]
+              then 
+                break
+              fi
               ((i++))
               sleep 2s
             done
