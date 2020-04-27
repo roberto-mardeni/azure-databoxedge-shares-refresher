@@ -11,7 +11,7 @@ on:
 env:
   RESOURCE_GROUP: EdgeTest
   LOCATION: eastus
-  CUSTOM_ROLE_NAME: azure-databoxedge-share-refresher
+  CUSTOM_ROLE_NAME: azure-databoxedge-share-refresher2
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -44,7 +44,19 @@ jobs:
           then
             az deployment sub create -n "${deploymentName}-cr" -l ${{ env.LOCATION }} --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/subscription-level-deployments/create-role-def/azuredeploy.json --parameters roleName='${{ env.CUSTOM_ROLE_NAME }}' --parameters actions='["*/read", "Microsoft.DataBoxEdge/dataBoxEdgeDevices/shares/refresh/action"]'
   
-            roleDefinitionId=$(az role definition list --name '${{ env.CUSTOM_ROLE_NAME }}' --query '[0].name' -o tsv)
+            i=0
+            while [ -z "$roleDefinitionId" ]
+            do
+              if [[ "$i" == '100' ]]
+              then
+                echo "Role Definition not found after $i tries"
+                break
+              fi
+              echo "Getting Role Definition Id"
+              roleDefinitionId=$(az role definition list --name '${{ env.CUSTOM_ROLE_NAME }}' --query '[0].name' -o tsv)
+              ((i++))
+              sleep 2s
+            done
           else
             echo "Role $roleDefinitionId already present"
           fi
