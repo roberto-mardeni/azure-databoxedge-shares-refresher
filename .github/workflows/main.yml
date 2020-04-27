@@ -76,7 +76,7 @@ jobs:
     - name: Deploy ARM Template
       uses: Azure/cli@v1.0.0
       with:
-        # Specify the script here
+        # Deploys the ARM template in the repository
         inlineScript: |
           if [ $(az group exists --name ${{ env.RESOURCE_GROUP }}) = false ]; then
             az group create --name ${{ env.RESOURCE_GROUP }} --location ${{ env.LOCATION }}
