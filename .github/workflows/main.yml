@@ -69,6 +69,8 @@ jobs:
           if [ -n "$roleDefinitionId" ]
           then
             az deployment sub create -n "${deploymentName}-ra" -l ${{ env.LOCATION }} --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/subscription-level-deployments/subscription-role-assigment/azuredeploy.json --parameters principalId=${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }} --parameters roleDefinitionId=$roleDefinitionId
+          else
+            raise error "Role Definition not available for role assignment"
           fi
 
     - name: Deploy ARM Template
