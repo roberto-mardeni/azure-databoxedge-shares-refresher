@@ -31,7 +31,7 @@ jobs:
         # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Create and Assign Custom Role
+    - name: Create and Assign Custom Role 
       uses: Azure/cli@v1.0.0
       with:
         # Creates the custom role only if needed
