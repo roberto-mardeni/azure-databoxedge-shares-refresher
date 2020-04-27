@@ -59,7 +59,7 @@ jobs:
                 break
               fi
               ((i++))
-              sleep 2s
+              sleep 1s
             done
           else
             echo "Role $roleDefinitionId already present"
