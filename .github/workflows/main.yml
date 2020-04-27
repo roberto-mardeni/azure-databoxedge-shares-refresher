@@ -43,35 +43,15 @@ jobs:
           if [ -z "$roleDefinitionId" ]
           then
             az deployment sub create -n "${deploymentName}-cr" -l ${{ env.LOCATION }} --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/subscription-level-deployments/create-role-def/azuredeploy.json --parameters roleName='${{ env.CUSTOM_ROLE_NAME }}' --parameters actions='["*/read", "Microsoft.DataBoxEdge/dataBoxEdgeDevices/shares/refresh/action"]'
-  
-            i=0
-            while [ -z "$roleDefinitionId" ]
-            do
-              if [ "$i" == '100' ]
-              then
-                echo "Role Definition not found after $i tries"
-                break
-              fi
-              echo "Getting Role Definition Id"
-              roleDefinitionId=$(az role definition list --name '${{ env.CUSTOM_ROLE_NAME }}' --query '[0].name' -o tsv)
-              if [ -z "$roleDefinitionId" ]
-              then
-                echo "Found Role Definition Id $roleDefinitionId" 
-                break
-              fi
-              ((i++))
-              sleep 1s
-            done
           else
             echo "Role $roleDefinitionId already present"
           fi
 
-          if [ -n "$roleDefinitionId" ]
-          then
-            az deployment sub create -n "${deploymentName}-ra" -l ${{ env.LOCATION }} --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/subscription-level-deployments/subscription-role-assigment/azuredeploy.json --parameters principalId=${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }} --parameters roleDefinitionId=$roleDefinitionId
-          else
-            raise error "Role Definition not available for role assignment"
-          fi
+          sleep 5s
+
+          roleDefinitionId=$(az role definition list --name '${{ env.CUSTOM_ROLE_NAME }}' --query '[0].name' -o tsv)
+
+          az deployment sub create -n "${deploymentName}-ra" -l ${{ env.LOCATION }} --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/subscription-level-deployments/subscription-role-assigment/azuredeploy.json --parameters principalId=${{ secrets.SERVICE_PRINCIPAL_OBJECT_ID }} --parameters roleDefinitionId=$roleDefinitionId
 
     - name: Deploy ARM Template
       uses: Azure/cli@v1.0.0
